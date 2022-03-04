@@ -1,45 +1,96 @@
+/* eslint-disable */
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa" target="_blank" rel="noopener">pwa</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+   <div class="hello">
+        <div class="container p-5 my-5 bg-dark text-white">
+            <h1>{{ msg }} </h1>
+            <p>
+                Below you can see the pictures taken of Earth this week.<br>
+                These images was taken by NASA's EPIC camera onboard the NOAA DSCOVR spacecraft.
+            </p>
+     
+        </div>
+        <div v-for="(image, index) in images" :key="index" class="container p-3 my-3 border">
+           <h2>{{image.ImageDate}} </h2>
+          <img :src ="image.ImageUrl" class="container p-3 my-3" />
+            <p></p>
+        </div>
+        
+       
+
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import vue from 'vue';
+import axios from 'axios';
+import moment from 'moment';
 
-@Component
-export default class HelloWorld extends Vue {
-  @Prop() private msg!: string;
+export interface Picture {
+    NumberInArray: number;
+   ImageUrl: string;
+   ImageDate: string;
 }
+
+export default Vue.extend({
+  name: 'HomePage',
+  props: {
+    msg: String,
+    DateToProp: String,
+    DateFromProp: String,
+  },
+  
+  created(){
+    this.getData()
+  },
+    data: function () {
+        return {
+            images: [],
+            DateTo: "" ,
+            DateFrom:"" 
+        }
+    },
+
+    methods: {
+        getData: function () {
+            let dateTo =  moment().format('YYYY/MM/DD');
+            let dateFrom = moment().subtract(7, 'd').format('YYYY/MM/DD');
+
+            this.DateTo = dateTo;
+            this.DateFrom = dateFrom;
+
+        this.getListOfDates()        
+        },
+        sortedItems: function() {
+          return this.images.sort((a, b) => new Date(b.ImageDate).getDate() - new Date(a
+          .ImageDate).getDate()) },
+
+
+
+
+        getListOfDates: function () {
+          var dateArray = [];
+          for (let index = 1; index < 8; index++) {
+            const date = moment().subtract(index, 'd').format('YYYY/MM/DD');
+            dateArray.push(date);
+                var query = `https://api.nasa.gov/EPIC/api/natural/date/${(moment(date).format('YYYY-MM-DD'))}?api_key=2y37XrAb3R1c7bnBiwIeWjkXwP26QWAdPmNQqRj5`;
+                axios.get(query).then(response =>{
+                
+                  let picture = {} as Picture;
+                 
+                  picture.ImageUrl =  `https://api.nasa.gov/EPIC/archive/natural/${date}/png/${response.data[7].image}.png?api_key=2y37XrAb3R1c7bnBiwIeWjkXwP26QWAdPmNQqRj5`;
+                  picture.ImageDate =  date;
+                  picture.NumberInArray = index;
+
+                  this.images.push(picture);
+                 
+                }).then(()=>{this.sortedItems()})
+          }
+        }
+    },
+  
+});
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
