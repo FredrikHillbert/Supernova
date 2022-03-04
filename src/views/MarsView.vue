@@ -1,5 +1,6 @@
 <template>
   <div class="about">
+    <h1>Latest Weather From Mars </h1>
       <MarsPage></MarsPage>
   </div>
 </template>

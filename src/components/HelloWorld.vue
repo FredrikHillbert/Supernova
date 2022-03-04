@@ -1,9 +1,21 @@
 /* eslint-disable */
 <template>
+
    <div class="hello">
-        <div class="container p-5 my-5 bg-dark text-white">
+     
+    <img class="img-fluid"  alt="Vue logo" src="../assets/SpaceMan.png">      
+    <figure class="text-center">
+  <blockquote class="blockquote">
+    <p class="fst-italic">It suddenly struck me that that tiny pea, pretty and blue, was the Earth. I put up my thumb and shut one eye, and my thumb blotted out the planet Earth. I didn't feel like a giant. I felt very, very small.</p>
+  </blockquote>
+  <figcaption class="blockquote-footer">
+    Neil Armstrong in <cite title="Source Title">10 Things: Our Home World From Afar By Phil Davis</cite>
+  </figcaption>
+</figure>
+     
+        <div class="container p-5 my-5 bg-white text-black">
             <h1>{{ msg }} </h1>
-            <p>
+            <p class="lead">
                 Below you can see the pictures taken of Earth this week.<br>
                 These images was taken by NASA's EPIC camera onboard the NOAA DSCOVR spacecraft.
             </p>
@@ -109,4 +121,9 @@ li {
 a {
   color: #42b983;
 }
+
+
+
+
+
 </style>
